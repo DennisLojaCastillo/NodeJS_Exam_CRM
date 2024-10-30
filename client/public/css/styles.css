@@ -1,0 +1,15 @@
+@import "bulma";
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.navbar, .footer {
+    background-color: #1a1a1a;
+}
+
+.button {
+    color: #ffffff;
+    background-color: #333333;
+}

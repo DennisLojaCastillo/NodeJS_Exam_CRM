@@ -51,16 +51,47 @@ router.put('/update/:id', (req, res) => {
 
 
 // Delete a lead
-router.delete('/delete/:id', (req, res) => {
+router.post('/delete/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM leads WHERE id = ?';
-
     db.query(sql, [id], (err, result) => {
         if (err) {
             console.error('Error deleting lead:', err);
             res.status(500).send('Server Error');
         } else {
-            res.send('Lead deleted successfully');
+            res.redirect('/leads');
+        }
+    });
+});
+
+
+
+// Get update form for a lead
+router.get('/update/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = 'SELECT * FROM leads WHERE id = ?';
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error('Error fetching lead:', err);
+            res.status(500).send('Server Error');
+        } else {
+            res.render('updateLead', { lead: results[0] });
+        }
+    });
+});
+
+
+// Update lead (form submission)
+router.post('/update/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, email, phone, company, status } = req.body;
+    const sql = 'UPDATE leads SET name = ?, email = ?, phone = ?, company = ?, status = ? WHERE id = ?';
+    db.query(sql, [name, email, phone, company, status, id], (err, result) => {
+        if (err) {
+            console.error('Error updating lead:', err);
+            res.status(500).send('Server Error');
+        } else {
+            res.redirect('/leads');
         }
     });
 });
