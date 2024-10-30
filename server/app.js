@@ -19,9 +19,9 @@ app.use(session({
 // Indstil public mappe til statiske filer
 app.use(express.static(path.join(__dirname, '../client/public')));
 
-// Indstil EJS som templating engine
+// Konfigurer view stien og template engine
+app.set('views', path.join(__dirname, '../client/src/views'));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../client/src'));
 
 // Eksportér app, så det kan bruges i server.js
 module.exports = app;
@@ -30,3 +30,6 @@ module.exports = app;
 app.get('/', (req, res) => {
     res.send('Velkommen til NodeJs Exam CRM!');
 });
+
+const leadRoutes = require('./routers/leadRoutes');
+app.use('/leads', leadRoutes);
