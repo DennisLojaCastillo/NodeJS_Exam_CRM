@@ -66,4 +66,10 @@ router.delete('/delete/:id', (req, res) => {
 });
 
 
+// Test view for Socket.io
+router.get('/socket-test', (req, res) => {
+    res.render('socketTest');
+});
+
+
 module.exports = router;
