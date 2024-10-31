@@ -13,3 +13,11 @@ body {
     color: #ffffff;
     background-color: #333333;
 }
+
+.sidebar {
+    margin-top: 5%;
+}
+
+.icon {
+    color: #ffffff;
+}

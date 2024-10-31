@@ -22,3 +22,11 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+const path = require('path');
+
+// Route til startsiden (index.html)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/src/index.html'));
+});
+

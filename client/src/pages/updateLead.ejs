@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+<div class="container is-fluid" style="height: 90vh;">
+  <div class="columns">
+    <!-- Sidebar -->
+    <div class="column is-2 sidebar">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a href="/dashboard"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
+          <li><a href="/leads"><span class="icon"><i class="fas fa-address-book"></i></span> Leads</a></li>
+          <li><a href="/leads/customers"><span class="icon"><i class="fas fa-users"></i></span> Customers</a></li>
+        </ul>
+        <p class="menu-label">Administration</p>
+        <ul class="menu-list">
+          <li><a href="#"><span class="icon"><i class="fas fa-chart-bar"></i></span> Analytics</a></li>
+          <li><a href="#"><span class="icon"><i class="fas fa-file-alt"></i></span> Reports</a></li>
+          <li><a href="#"><span class="icon"><i class="fas fa-user-tie"></i></span> Employee</a></li>
+          <li><a href="#"><span class="icon"><i class="fas fa-clock"></i></span> Schedule</a></li>
+          <li><a><span class="icon"><i class="fas fa-cog"></i></span> Settings</a></li>
+          <li><a><span class="icon"><i class="fas fa-user"></i></span> Profile</a></li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- Main Update Lead Content -->
+    <div class="column is-10">
+      <section class="section">
+        <h1 class="title">Edit lead</h1>
+        <div class="container">
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">Update Lead</p>
+            </header>
+            <div class="card-content">
+                <form action="/leads/update/<%= lead.id %>" method="POST">
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control">
+                            <input class="input" type="text" name="name" value="<%= lead.name %>" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" name="email" value="<%= lead.email %>" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Phone</label>
+                        <div class="control">
+                            <input class="input" type="text" name="phone" value="<%= lead.phone %>">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Company</label>
+                        <div class="control">
+                            <input class="input" type="text" name="company" value="<%= lead.company %>" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Status</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="status">
+                                    <option value="open" <%= lead.status === 'open' ? 'selected' : '' %>>Open</option>
+                                    <option value="won" <%= lead.status === 'won' ? 'selected' : '' %>>Won</option>
+                                    <option value="lost" <%= lead.status === 'lost' ? 'selected' : '' %>>Lost</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Update Lead</button>
+                    </div>
+                </form>                
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

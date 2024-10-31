@@ -29,10 +29,10 @@ router.post('/add', (req, res) => {
     });
 });
 
-// Update a lead (status vundet/tabt)
-router.put('/update/:id', (req, res) => {
+// Update a lead (status ændres til vundet/tabt)
+router.post('/update/:id', (req, res) => {
     const { id } = req.params;
-    const { status } = req.body; // status kan være "won" eller "lost"
+    const { status } = req.body; // status kan være "won", "lost" eller "open"
     const sql = 'UPDATE leads SET status = ? WHERE id = ?';
 
     db.query(sql, [status, id], (err, result) => {
@@ -44,10 +44,39 @@ router.put('/update/:id', (req, res) => {
             const io = req.app.get('socketio');
             io.emit('leadStatusUpdate', { leadId: id, status: status });
 
-            res.send('Lead updated successfully');
+            if (status === 'won') {
+                // Hvis status ændres til "won", tilføj leadet som customer
+                const customerSql = 'INSERT INTO customers (name, email, phone, company) SELECT name, email, phone, company FROM leads WHERE id = ?';
+                db.query(customerSql, [id], (customerErr) => {
+                    if (customerErr) {
+                        console.error('Error adding customer:', customerErr);
+                        res.status(500).send('Server Error');
+                    } else {
+                        console.log('Lead added as customer successfully');
+                        res.redirect('/leads');
+                    }
+                });
+            } else if (status === 'open' || status === 'lost') {
+                // Hvis status ændres fra "won" til noget andet, fjern kunden fra customers
+                const deleteCustomerSql = 'DELETE FROM customers WHERE name = (SELECT name FROM leads WHERE id = ?)';
+                db.query(deleteCustomerSql, [id], (deleteErr) => {
+                    if (deleteErr) {
+                        console.error('Error deleting customer:', deleteErr);
+                        res.status(500).send('Server Error');
+                    } else {
+                        console.log('Customer removed from customers table');
+                        res.redirect('/leads');
+                    }
+                });
+            } else {
+                res.redirect('/leads');
+            }
         }
     });
 });
+
+
+
 
 
 // Delete a lead
@@ -95,6 +124,20 @@ router.post('/update/:id', (req, res) => {
         }
     });
 });
+
+// Get all customers
+router.get('/customers', (req, res) => {
+    const sql = 'SELECT * FROM customers';
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching customers:', err);
+            res.status(500).send('Server Error');
+        } else {
+            res.render('customers', { customers: results });
+        }
+    });
+});
+
 
 
 // Test view for Socket.io

@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+<div class="container is-fluid" style="height: 90vh;">
+    <div class="columns">
+        <!-- Sidebar -->
+        <div class="column is-2 sidebar">
+            <aside class="menu">
+                <p class="menu-label">General</p>
+                <ul class="menu-list">
+                    <li><a href="/dashboard"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
+                    <li><a href="/leads"><span class="icon"><i class="fas fa-address-book"></i></span> Leads</a></li>
+                    <li><a href="/leads/customers"><span class="icon"><i class="fas fa-users"></i></span> Customers</a></li>
+                </ul>
+                <p class="menu-label">Administration</p>
+                <ul class="menu-list">
+                    <li><a href="#"><span class="icon"><i class="fas fa-chart-bar"></i></span> Analytics</a></li>
+                    <li><a href="#"><span class="icon"><i class="fas fa-file-alt"></i></span> Reports</a></li>
+                    <li><a href="#"><span class="icon"><i class="fas fa-user-tie"></i></span> Employee</a></li>
+                    <li><a href="#"><span class="icon"><i class="fas fa-clock"></i></span> Schedule</a></li>
+                    <li><a><span class="icon"><i class="fas fa-cog"></i></span> Settings</a></li>
+                    <li><a><span class="icon"><i class="fas fa-user"></i></span> Profile</a></li>
+                </ul>
+            </aside>
+        </div>
+        <!-- Main Dashboard Content -->
+        <div class="column is-10">
+            <section class="section">
+                <h1 class="title">Dashboard</h1>
+                <div class="columns">
+                    <div class="column is-3">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Total Leads</p>
+                            </header>
+                            <div class="card-content">
+                                <p><%= leads.length %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Open Deals</p>
+                            </header>
+                            <div class="card-content">
+                                <p><%= leads.filter(lead => lead.status === 'open').length %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Won Deals</p>
+                            </header>
+                            <div class="card-content">
+                                <p><%= leads.filter(lead => lead.status === 'won').length %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Lost Deals</p>
+                            </header>
+                            <div class="card-content">
+                                <p><%= leads.filter(lead => lead.status === 'lost').length %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-12">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Leads List</p>
+                            </header>
+                            <div class="card-content">
+                                <table class="table is-fullwidth">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Company</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% leads.forEach(function(lead) { %>
+                                            <tr>
+                                                <td><%= lead.name %></td>
+                                                <td><%= lead.company %></td>
+                                                <td><%= lead.email %></td>
+                                                <td><%= lead.phone %></td>
+                                                <td><%= lead.status %></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>
