@@ -16,6 +16,12 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// Gør session tilgængelig i views
+app.use((req, res, next) => {
+    res.locals.session = req.session;
+    next();
+});
+
 // Indstil public mappe til statiske filer
 app.use(express.static(path.join(__dirname, '../client/public')));
 
@@ -32,16 +38,13 @@ app.get('/', (req, res) => {
 const leadRoutes = require('./routers/leadRoutes');
 app.use('/leads', leadRoutes);
 
-// Fjern denne linje
-// app.get('/dashboard', (req, res) => {
-//     res.render('dashboard');
-// });
-
 // Dashboard routes fra dashboardRoutes.js
 const dashboardRoutes = require('./routers/dashboardRoutes');
 app.use('/dashboard', dashboardRoutes);
 
-
+// Auth routes
+const authRoutes = require('./routers/authRoutes');
+app.use(authRoutes);
 
 // Eksportér app, så det kan bruges i server.js
 module.exports = app;

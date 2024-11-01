@@ -100,8 +100,36 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Notification Box -->
+                <div class="columns">
+                    <div class="column is-12">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Notifications</p>
+                            </header>
+                            <div class="card-content">
+                                <ul id="notification-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
 </div>
 <%- include('partials/footer') %>
+
+<!-- Socket.io Integration -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const notificationList = document.getElementById('notification-list');
+
+    // Lyt til beskeden 'leadStatusUpdate'
+    socket.on('leadStatusUpdate', (data) => {
+        const notificationItem = document.createElement('li');
+        notificationItem.textContent = `Lead ID: ${data.leadId} blev opdateret til status: ${data.status}`;
+        notificationList.appendChild(notificationItem);
+    });
+</script>

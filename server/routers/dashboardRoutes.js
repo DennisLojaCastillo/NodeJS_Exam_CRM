@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { isAuthenticated } = require('../middleware/auth'); // Importer autentifikationsmiddleware
 
-// Dashboard route
-router.get('/', (req, res) => {
+// Dashboard route (beskyttet)
+router.get('/', isAuthenticated, (req, res) => {
     const sql = 'SELECT * FROM leads';
     db.query(sql, (err, results) => {
         if (err) {

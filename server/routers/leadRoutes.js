@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
+
+// Beskyt alle lead routes med autentificering
+router.use(isAuthenticated);
 
 // Get all leads
 router.get('/', (req, res) => {
@@ -10,21 +14,22 @@ router.get('/', (req, res) => {
             console.error('Error fetching leads:', err);
             res.status(500).send('Server Error');
         } else {
-            res.render('leads', { leads: results }); // Viser leads med EJS
+            res.render('leads', { leads: results });
         }
     });
 });
 
-// Add a new lead
+// Add a new lead via Fetch API
 router.post('/add', (req, res) => {
     const { name, email, phone, company } = req.body;
+
     const sql = 'INSERT INTO leads (name, email, phone, company, status) VALUES (?, ?, ?, ?, "open")';
     db.query(sql, [name, email, phone, company], (err, result) => {
         if (err) {
             console.error('Error adding lead:', err);
-            res.status(500).send('Server Error');
+            res.status(500).json({ error: 'Server Error' });
         } else {
-            res.redirect('/leads');
+            res.status(201).json({ message: 'Lead added successfully', leadId: result.insertId });
         }
     });
 });
@@ -75,12 +80,8 @@ router.post('/update/:id', (req, res) => {
     });
 });
 
-
-
-
-
-// Delete a lead
-router.post('/delete/:id', (req, res) => {
+// Delete a lead - kun admin kan slette leads
+router.post('/delete/:id', isAdmin, (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM leads WHERE id = ?';
     db.query(sql, [id], (err, result) => {
@@ -92,8 +93,6 @@ router.post('/delete/:id', (req, res) => {
         }
     });
 });
-
-
 
 // Get update form for a lead
 router.get('/update/:id', (req, res) => {
@@ -108,7 +107,6 @@ router.get('/update/:id', (req, res) => {
         }
     });
 });
-
 
 // Update lead (form submission)
 router.post('/update/:id', (req, res) => {
@@ -138,12 +136,9 @@ router.get('/customers', (req, res) => {
     });
 });
 
-
-
 // Test view for Socket.io
 router.get('/socket-test', (req, res) => {
     res.render('socketTest');
 });
-
 
 module.exports = router;
