@@ -12,15 +12,16 @@
 <body>
   <header>
     <nav class="navbar has-shadow is-dark">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+      <div class="navbar-brand is-flex is-align-items-center is-flex-direction-column" style="align-items: center; justify-content: center;">
+        <a class="navbar-item" href="/dashboard">
           <img src="/assets/img/logo.png" alt="Logo">
         </a> 
         <div class="navbar-item">
-          <h1 class="title has-text-white" style="margin-left: 10px; font-size: 20px;">Customer Relationship Management</h1>
+          <h1 class="title has-text-white" style="font-size: 20px;">Customer Relationship Management</h1>
         </div>
       </div>
 
+      <% if (session && session.userId) { %>
       <div class="navbar-menu is-active">
         <div class="navbar-end">
           <div class="navbar-item has-dropdown is-hoverable">
@@ -28,7 +29,10 @@
               <figure class="image is-50x50" style="margin-right: 5px;">
                 <img class="is-rounded" src="/assets/img/profile.png" alt="Profile">
               </figure>
-              <span>Dennis Castillo</span>              
+              <div>
+                <span><%= session.username %></span><br>
+                <span class="has-text-grey-light"><%= session.userRole %></span>
+              </div>
             </a>
 
             <div class="navbar-dropdown is-right">
@@ -44,10 +48,12 @@
               <a class="navbar-item" href="/logout">
                 <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
                 Logout
-            </a>            
+              </a>            
             </div>
           </div>
         </div>
       </div>
+      <% } %>
     </nav>  
   </header>
+</body>

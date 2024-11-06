@@ -11,7 +11,7 @@ router.get('/signup', (req, res) => {
 
 // Signup POST request
 router.post('/signup', (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     bcrypt.hash(password, saltRounds, (err, hash) => {
         if (err) {
@@ -20,8 +20,8 @@ router.post('/signup', (req, res) => {
             return;
         }
 
-        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        db.query(sql, [name, email, hash], (dbErr) => {
+        const sql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
+        db.query(sql, [name, email, hash, role], (dbErr) => {
             if (dbErr) {
                 console.error('Error signing up user:', dbErr);
                 res.status(500).send('Server Error');
@@ -31,6 +31,7 @@ router.post('/signup', (req, res) => {
         });
     });
 });
+
 
 // Login route
 router.get('/login', (req, res) => {
@@ -54,6 +55,7 @@ router.post('/login', (req, res) => {
                 } else if (isMatch) {
                     req.session.userId = results[0].id;
                     req.session.username = results[0].name;
+                    req.session.userRole = results[0].role; // Gem brugerens rolle i sessionen
                     res.redirect('/dashboard');
                 } else {
                     res.redirect('/login');
@@ -72,6 +74,7 @@ router.get('/logout', (req, res) => {
             console.error('Error logging out:', err);
             res.status(500).send('Server Error');
         } else {
+            res.clearCookie('connect.sid'); // Fjern session-cookien
             res.redirect('/login');
         }
     });

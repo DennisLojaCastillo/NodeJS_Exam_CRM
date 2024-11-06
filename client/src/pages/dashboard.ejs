@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<div class="container is-fluid" style="height: 90vh;">
+<div class="container is-fluid" style="height: 150vh;">
     <div class="columns">
         <!-- Sidebar -->
         <div class="column is-2 sidebar">
@@ -129,7 +129,7 @@
     // Lyt til beskeden 'leadStatusUpdate'
     socket.on('leadStatusUpdate', (data) => {
         const notificationItem = document.createElement('li');
-        notificationItem.textContent = `Lead ID: ${data.leadId} blev opdateret til status: ${data.status}`;
+        notificationItem.textContent = `Lead ID: ${data.leadId} was updated to status: ${data.status}`;
         notificationList.appendChild(notificationItem);
     });
 </script>

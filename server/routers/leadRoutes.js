@@ -83,13 +83,24 @@ router.post('/update/:id', (req, res) => {
 // Delete a lead - kun admin kan slette leads
 router.post('/delete/:id', isAdmin, (req, res) => {
     const { id } = req.params;
-    const sql = 'DELETE FROM leads WHERE id = ?';
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error('Error deleting lead:', err);
+
+    // Først, slet lead fra customers, hvis det er "won"
+    const deleteCustomerSql = 'DELETE FROM customers WHERE name = (SELECT name FROM leads WHERE id = ? AND status = "won")';
+    db.query(deleteCustomerSql, [id], (deleteCustomerErr) => {
+        if (deleteCustomerErr) {
+            console.error('Error deleting customer:', deleteCustomerErr);
             res.status(500).send('Server Error');
         } else {
-            res.redirect('/leads');
+            // Slet derefter leadet fra leads-tabellen
+            const deleteLeadSql = 'DELETE FROM leads WHERE id = ?';
+            db.query(deleteLeadSql, [id], (deleteLeadErr) => {
+                if (deleteLeadErr) {
+                    console.error('Error deleting lead:', deleteLeadErr);
+                    res.status(500).send('Server Error');
+                } else {
+                    res.redirect('/leads');
+                }
+            });
         }
     });
 });
@@ -134,11 +145,6 @@ router.get('/customers', (req, res) => {
             res.render('customers', { customers: results });
         }
     });
-});
-
-// Test view for Socket.io
-router.get('/socket-test', (req, res) => {
-    res.render('socketTest');
 });
 
 module.exports = router;

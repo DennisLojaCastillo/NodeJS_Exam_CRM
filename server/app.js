@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const { isAuthenticated } = require('./middleware/auth');
 
 const app = express();
 
@@ -22,6 +23,12 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware til at forhindre caching
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+
 // Indstil public mappe til statiske filer
 app.use(express.static(path.join(__dirname, '../client/public')));
 
@@ -34,17 +41,17 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/src/index.html'));
 });
 
-// Lead routes
-const leadRoutes = require('./routers/leadRoutes');
-app.use('/leads', leadRoutes);
-
-// Dashboard routes fra dashboardRoutes.js
-const dashboardRoutes = require('./routers/dashboardRoutes');
-app.use('/dashboard', dashboardRoutes);
-
 // Auth routes
 const authRoutes = require('./routers/authRoutes');
 app.use(authRoutes);
+
+// Lead routes med autentificering
+const leadRoutes = require('./routers/leadRoutes');
+app.use('/leads', isAuthenticated, leadRoutes);
+
+// Dashboard routes fra dashboardRoutes.js med autentificering
+const dashboardRoutes = require('./routers/dashboardRoutes');
+app.use('/dashboard', isAuthenticated, dashboardRoutes);
 
 // Eksportér app, så det kan bruges i server.js
 module.exports = app;
