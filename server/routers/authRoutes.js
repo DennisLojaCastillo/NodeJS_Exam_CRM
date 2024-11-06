@@ -15,7 +15,6 @@ router.post('/signup', (req, res) => {
 
     bcrypt.hash(password, saltRounds, (err, hash) => {
         if (err) {
-            console.error('Error hashing password:', err);
             res.status(500).send('Server Error');
             return;
         }
@@ -23,7 +22,6 @@ router.post('/signup', (req, res) => {
         const sql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
         db.query(sql, [name, email, hash, role], (dbErr) => {
             if (dbErr) {
-                console.error('Error signing up user:', dbErr);
                 res.status(500).send('Server Error');
             } else {
                 res.redirect('/login');
@@ -45,12 +43,10 @@ router.post('/login', (req, res) => {
     const sql = 'SELECT * FROM users WHERE email = ?';
     db.query(sql, [email], (err, results) => {
         if (err) {
-            console.error('Error during login:', err);
             res.status(500).send('Server Error');
         } else if (results.length > 0) {
             bcrypt.compare(password, results[0].password, (compareErr, isMatch) => {
                 if (compareErr) {
-                    console.error('Error comparing passwords:', compareErr);
                     res.status(500).send('Server Error');
                 } else if (isMatch) {
                     req.session.userId = results[0].id;
@@ -71,7 +67,6 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error('Error logging out:', err);
             res.status(500).send('Server Error');
         } else {
             res.clearCookie('connect.sid'); // Fjern session-cookien

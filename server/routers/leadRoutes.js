@@ -10,8 +10,7 @@ router.use(isAuthenticated);
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM leads';
     db.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error fetching leads:', err);
+        if (err) {            
             res.status(500).send('Server Error');
         } else {
             res.render('leads', { leads: results });
@@ -26,7 +25,6 @@ router.post('/add', (req, res) => {
     const sql = 'INSERT INTO leads (name, email, phone, company, status) VALUES (?, ?, ?, ?, "open")';
     db.query(sql, [name, email, phone, company], (err, result) => {
         if (err) {
-            console.error('Error adding lead:', err);
             res.status(500).json({ error: 'Server Error' });
         } else {
             res.status(201).json({ message: 'Lead added successfully', leadId: result.insertId });
@@ -42,7 +40,6 @@ router.post('/update/:id', (req, res) => {
 
     db.query(sql, [status, id], (err, result) => {
         if (err) {
-            console.error('Error updating lead:', err);
             res.status(500).send('Server Error');
         } else {
             // Emit real-time notification to admin here [Socket.io integration]
@@ -54,10 +51,8 @@ router.post('/update/:id', (req, res) => {
                 const customerSql = 'INSERT INTO customers (name, email, phone, company) SELECT name, email, phone, company FROM leads WHERE id = ?';
                 db.query(customerSql, [id], (customerErr) => {
                     if (customerErr) {
-                        console.error('Error adding customer:', customerErr);
                         res.status(500).send('Server Error');
                     } else {
-                        console.log('Lead added as customer successfully');
                         res.redirect('/leads');
                     }
                 });
@@ -65,11 +60,9 @@ router.post('/update/:id', (req, res) => {
                 // Hvis status ændres fra "won" til noget andet, fjern kunden fra customers
                 const deleteCustomerSql = 'DELETE FROM customers WHERE name = (SELECT name FROM leads WHERE id = ?)';
                 db.query(deleteCustomerSql, [id], (deleteErr) => {
-                    if (deleteErr) {
-                        console.error('Error deleting customer:', deleteErr);
+                    if (deleteErr) {                        
                         res.status(500).send('Server Error');
                     } else {
-                        console.log('Customer removed from customers table');
                         res.redirect('/leads');
                     }
                 });
@@ -87,15 +80,13 @@ router.post('/delete/:id', isAdmin, (req, res) => {
     // Først, slet lead fra customers, hvis det er "won"
     const deleteCustomerSql = 'DELETE FROM customers WHERE name = (SELECT name FROM leads WHERE id = ? AND status = "won")';
     db.query(deleteCustomerSql, [id], (deleteCustomerErr) => {
-        if (deleteCustomerErr) {
-            console.error('Error deleting customer:', deleteCustomerErr);
+        if (deleteCustomerErr) {            
             res.status(500).send('Server Error');
         } else {
             // Slet derefter leadet fra leads-tabellen
             const deleteLeadSql = 'DELETE FROM leads WHERE id = ?';
             db.query(deleteLeadSql, [id], (deleteLeadErr) => {
                 if (deleteLeadErr) {
-                    console.error('Error deleting lead:', deleteLeadErr);
                     res.status(500).send('Server Error');
                 } else {
                     res.redirect('/leads');
@@ -111,7 +102,6 @@ router.get('/update/:id', (req, res) => {
     const sql = 'SELECT * FROM leads WHERE id = ?';
     db.query(sql, [id], (err, results) => {
         if (err) {
-            console.error('Error fetching lead:', err);
             res.status(500).send('Server Error');
         } else {
             res.render('updateLead', { lead: results[0] });
@@ -126,7 +116,6 @@ router.post('/update/:id', (req, res) => {
     const sql = 'UPDATE leads SET name = ?, email = ?, phone = ?, company = ?, status = ? WHERE id = ?';
     db.query(sql, [name, email, phone, company, status, id], (err, result) => {
         if (err) {
-            console.error('Error updating lead:', err);
             res.status(500).send('Server Error');
         } else {
             res.redirect('/leads');
@@ -139,7 +128,6 @@ router.get('/customers', (req, res) => {
     const sql = 'SELECT * FROM customers';
     db.query(sql, (err, results) => {
         if (err) {
-            console.error('Error fetching customers:', err);
             res.status(500).send('Server Error');
         } else {
             res.render('customers', { customers: results });

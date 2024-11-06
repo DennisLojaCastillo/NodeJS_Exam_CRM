@@ -7,11 +7,7 @@ const io = socketIo(server);
 
 // Lyt til klientforbindelser
 io.on('connection', (socket) => {
-    console.log('Ny klient forbundet');
-
-    socket.on('disconnect', () => {
-        console.log('Klient afbrudt');
-    });
+    socket.on('disconnect', () => {});
 });
 
 // Gem io-objektet i app, så det kan bruges andre steder
@@ -19,9 +15,7 @@ app.set('socketio', io);
 
 // Start serveren
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+server.listen(PORT);
 
 const path = require('path');
 
@@ -29,4 +23,3 @@ const path = require('path');
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/src/index.html'));
 });
-
